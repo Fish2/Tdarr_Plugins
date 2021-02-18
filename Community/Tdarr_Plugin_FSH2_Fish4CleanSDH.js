@@ -93,7 +93,7 @@ function plugin(file, librarySettings, inputs) {
     } catch (err) {
       // Error
     }
-  } else if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') {
+  } if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') {
     attachmentIdx += 1;
   }
 
