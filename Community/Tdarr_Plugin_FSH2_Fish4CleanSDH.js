@@ -105,12 +105,14 @@ function plugin(file, librarySettings, inputs) {
       // AND then checks for stream titles with the following "commentary or description".
       // Removing any streams that are applicable.
       if (inputs.commentary.toLowerCase() === 'true') {
-        if (((file.ffProbeData.streams[i].codec_type.toLowerCase() === 'subtitle') && (file.ffProbeData.streams[i].tags.title.toLowerCase().includes('commentary') || file.ffProbeData.streams[i].tags.title.toLowerCase().includes('description') || file.ffProbeData.streams[i].tags.title.toLowerCase().includes('sdh') || file.ffProbeData.streams[i].codec_name == 'ass')) ||
-          (file.ffProbeData.streams[i].codec_type.toLowerCase() == 'attachment' && file.ffProbeData.streams[i].codec_name == 'ttf')) {
+        if ((file.ffProbeData.streams[i].codec_type.toLowerCase() === 'subtitle') && (file.ffProbeData.streams[i].tags.title.toLowerCase().includes('commentary') || file.ffProbeData.streams[i].tags.title.toLowerCase().includes('description') || file.ffProbeData.streams[i].tags.title.toLowerCase().includes('sdh') || file.ffProbeData.streams[i].codec_name == 'ass')) {
           ffmpegCommandInsert += `-map -0:s:${subtitleIdx} `;
           response.infoLog += `☒Subtitle stream detected as being descriptive, removing. Stream 0:s:${subtitleIdx} \n`;
           convert = true;
-        }
+        } else if (file.ffProbeData.streams[i].codec_type.toLowerCase() == 'attachment' && file.ffProbeData.streams[i].codec_name == 'ttf') {
+          ffmpegCommandInsert += `-map -0:t:${subtitleIdx} `;
+          response.infoLog += `☒Subtitle attachment detected as being descriptive, removing. Stream 0:t:${subtitleIdx} \n`;
+          convert = true;
       }
     } catch (err) {
       // Error
