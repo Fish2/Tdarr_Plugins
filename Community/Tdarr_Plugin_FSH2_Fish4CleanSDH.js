@@ -93,8 +93,9 @@ function plugin(file, librarySettings, inputs) {
     } catch (err) {
       // Error
     }
-  } if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') {
-    attachmentIdx += 1;
+    if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') {
+      attachmentIdx += 1;
+    }
   }
 
   // Go through each stream in the file.
