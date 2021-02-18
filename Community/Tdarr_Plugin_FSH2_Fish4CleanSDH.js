@@ -109,7 +109,7 @@ function plugin(file, librarySettings, inputs) {
           ffmpegCommandInsert += `-map -0:s:${subtitleIdx} `;
           response.infoLog += `☒Subtitle stream detected as being descriptive, removing. Stream 0:s:${subtitleIdx} \n`;
           convert = true;
-        } else if ((file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') && (file.ffProbeData.streams[i].codec_name == 'ttf')) {
+        } else if ((file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') && (file.ffProbeData.streams[i].codec_name.toLowerCase() === 'ttf')) {
             extraArguments += `-map -0:t:${subtitleIdx} `;
             response.infoLog += `☒Subtitle stream attachment detected as being descriptive, removing. Stream 0:t:${subtitleIdx} \n`;
             convert = true;
