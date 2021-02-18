@@ -3,12 +3,12 @@ function details() {
   return {
     id: 'Tdarr_Plugin_FSH2_Fish4CleanSDH',
     Stage: 'Pre-processing',
-    Name: 'Migz-Clean subtitle streams with SDH',
+    Name: 'Fish-Migz-Clean subtitle streams with SDH',
     Type: 'subtitles',
     Operation: 'Clean',
     Description: 'This plugin keeps only specified language tracks & can tag tracks with an unknown language. \n\n',
     Version: '2.4',
-    Link: 'https://github.com/HaveAGitGat/Tdarr_Plugins/blob/master/Community/Tdarr_Plugin_MC93_Migz4CleanSubs.js',
+    Link: 'https://github.com/Fish2/Tdarr_Plugins/blob/master/Community/Tdarr_Plugin_FSH2_Fish4CleanSDH.js',
     Tags: 'pre-processing,ffmpeg,subtitle only,configurable',
     Inputs: [{
       name: 'language',
@@ -112,7 +112,7 @@ function plugin(file, librarySettings, inputs) {
           .includes('commentary')
           || file.ffProbeData.streams[i].tags.title
             .toLowerCase()
-            .includes('description'))
+            .includes('description')
           || file.ffProbeData.streams[i].tags.title
             .toLowerCase()
             .includes('SDH'))
