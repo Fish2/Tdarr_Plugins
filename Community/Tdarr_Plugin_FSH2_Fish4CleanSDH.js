@@ -87,7 +87,7 @@ function plugin(file, librarySettings, inputs) {
       // AND then checks for stream titles with the following "commentary or description".
       // Removing any streams that are applicable.
       if (inputs.commentary.toLowerCase() === 'true' && file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment' && file.ffProbeData.streams[i].codec_name.toLowerCase() === 'ttf') {
-        extraArguments += `-map -0:t:${attachmentIdx} `;
+        ffmpegCommandInsert += `-map -0:t:${attachmentIdx} `;
         response.infoLog += `☒Subtitle stream attachment detected as being descriptive, removing. Stream 0:t:${attachmentIdx} \n`;
         convert = true;
       }
@@ -95,9 +95,6 @@ function plugin(file, librarySettings, inputs) {
       // Error
     }
 
-    if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') {
-      attachmentIdx += 1;
-    }
     // Catch error here incase the language metadata is completely missing.
     try {
       // Check if stream is subtitle
@@ -174,6 +171,8 @@ function plugin(file, librarySettings, inputs) {
     // Check if stream type is subtitle or attachment and increment subtitleIdx if true.
     if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'subtitle') {
       subtitleIdx += 1;
+    } else if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') {
+      attachmentIdx += 1;
     }
   }
 
