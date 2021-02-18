@@ -115,7 +115,7 @@ function plugin(file, librarySettings, inputs) {
             .includes('description')
           || file.ffProbeData.streams[i].tags.title
             .toLowerCase()
-            .includes('SDH'))
+            .includes('sdh'))
       ) {
         ffmpegCommandInsert += `-map -0:s:${subtitleIdx} `;
         response.infoLog += `☒Subtitle stream detected as being descriptive, removing. Stream 0:s:${subtitleIdx} \n`;
