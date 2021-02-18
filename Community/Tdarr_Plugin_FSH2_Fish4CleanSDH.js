@@ -79,6 +79,7 @@ function plugin(file, librarySettings, inputs) {
   let attachmentIdx = 0;
   let convert = false;
 
+  // Go through each stream in the file.
   for (let i = 0; i < file.ffProbeData.streams.length; i++) {
     try {
       // Check if inputs.commentary is set to true
@@ -93,13 +94,10 @@ function plugin(file, librarySettings, inputs) {
     } catch (err) {
       // Error
     }
+
     if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') {
       attachmentIdx += 1;
     }
-  }
-
-  // Go through each stream in the file.
-  for (let i = 0; i < file.ffProbeData.streams.length; i++) {
     // Catch error here incase the language metadata is completely missing.
     try {
       // Check if stream is subtitle
