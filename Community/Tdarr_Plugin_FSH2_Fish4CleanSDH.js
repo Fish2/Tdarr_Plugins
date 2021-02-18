@@ -110,8 +110,8 @@ function plugin(file, librarySettings, inputs) {
           response.infoLog += `☒Subtitle stream detected as being descriptive, removing. Stream 0:s:${subtitleIdx} \n`;
           convert = true;
         }
-        if (file.ffProbeData.streams[i].codec_type.toLowerCase() == "attachment") {
-          if (file.ffProbeData.streams[i].codec_name == "ttf") {
+        if (file.ffProbeData.streams[i].codec_type.toLowerCase() === 'attachment') {
+          if (file.ffProbeData.streams[i].codec_name == 'ttf') {
             extraArguments += `-map -0:t:${attachmentIdx} `;
             response.infoLog += `☒Subtitle stream attachment detected as being descriptive, removing. Stream 0:t:${attachmentIdx} \n`;
             convert = true;
