@@ -8,7 +8,10 @@ import {
 const details = (): IpluginDetails => ({
   name: 'Require Review',
   description: `Makes the flow pause.
-  The file will stay in the staging section on the Tdarr tab until the user clicks the "Reviewed" button.
+  The file will stay in the staging section on the Tdarr tab until the user approves or rejects the review.
+
+  Output 1: Approve / Continue
+  Output 2: Reject
 
   Note: The 'Auto accept successful transcodes' option on the Tdarr tab will cause this plugin to be skipped.
   `,
@@ -25,7 +28,11 @@ const details = (): IpluginDetails => ({
   outputs: [
     {
       number: 1,
-      tooltip: 'Continue to next plugin',
+      tooltip: 'Approve / continue to next plugin',
+    },
+    {
+      number: 2,
+      tooltip: 'Reject reviewed file',
     },
   ],
 });
