@@ -4,7 +4,7 @@ exports.plugin = exports.details = void 0;
 /* eslint no-plusplus: ["error", { "allowForLoopAfterthoughts": true }] */
 var details = function () { return ({
     name: 'Require Review',
-    description: "Makes the flow pause.\n  The file will stay in the staging section on the Tdarr tab until the user clicks the \"Reviewed\" button.\n\n  Note: The 'Auto accept successful transcodes' option on the Tdarr tab will cause this plugin to be skipped.\n  ",
+    description: "Makes the flow pause.\n  The file will stay in the staging section on the Tdarr tab until the user approves or rejects the review.\n\n  Output 1: Approve / Continue\n  Output 2: Reject\n\n  Note: The 'Auto accept successful transcodes' option on the Tdarr tab will cause this plugin to be skipped.\n  ",
     style: {
         borderColor: 'yellow',
     },
@@ -18,7 +18,11 @@ var details = function () { return ({
     outputs: [
         {
             number: 1,
-            tooltip: 'Continue to next plugin',
+            tooltip: 'Approve / continue to next plugin',
+        },
+        {
+            number: 2,
+            tooltip: 'Reject reviewed file',
         },
     ],
 }); };
