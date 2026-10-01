@@ -8,7 +8,7 @@ import {
 const details = (): IpluginDetails => ({
   name: 'Require Review',
   description: `Makes the flow pause.
-  The file will stay in the staging section on the Tdarr tab until the user approves or rejects the review.
+  The file will stay in the staging section on the Tdarr tab until the review is completed.
 
   Output 1: Approve / Continue
   Output 2: Reject
@@ -32,7 +32,7 @@ const details = (): IpluginDetails => ({
     },
     {
       number: 2,
-      tooltip: 'Reject reviewed file',
+      tooltip: 'Reject',
     },
   ],
 });
