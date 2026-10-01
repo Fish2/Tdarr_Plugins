@@ -1,4 +1,4 @@
-import { details, plugin } from
+import { plugin, details } from
   '../../../../../../FlowPluginsTs/CommunityFlowPlugins/tools/requireReview/1.0.0/index';
 import { IpluginInputArgs } from '../../../../../../FlowPluginsTs/FlowHelpers/1.0.0/interfaces/interfaces';
 import { IFileObject } from '../../../../../../FlowPluginsTs/FlowHelpers/1.0.0/interfaces/synced/IFileObject';
@@ -30,18 +30,20 @@ describe('requireReview Plugin', () => {
     } as Partial<IpluginInputArgs> as IpluginInputArgs;
   });
 
-  describe('Details', () => {
+  describe('details', () => {
     it('should expose approve and reject outputs', () => {
-      expect(details().outputs).toEqual([
-        {
-          number: 1,
-          tooltip: 'Approve / continue to next plugin',
-        },
-        {
-          number: 2,
-          tooltip: 'Reject reviewed file',
-        },
-      ]);
+      const d = details();
+
+      expect(d.name).toBe('Require Review');
+      expect(d.outputs).toHaveLength(2);
+      expect(d.outputs[0]).toEqual({
+        number: 1,
+        tooltip: 'Approve / continue to next plugin',
+      });
+      expect(d.outputs[1]).toEqual({
+        number: 2,
+        tooltip: 'Reject',
+      });
     });
   });
 
