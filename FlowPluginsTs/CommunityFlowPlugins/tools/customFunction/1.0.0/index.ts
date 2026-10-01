@@ -9,9 +9,66 @@ import {
 } from '../../../../FlowHelpers/1.0.0/interfaces/interfaces';
 
 /* eslint no-plusplus: ["error", { "allowForLoopAfterthoughts": true }] */
-const details = (): IpluginDetails => ({
+const DEFAULT_OUTPUT_COUNT = 4;
+
+const getOutputCountFromCode = (code: string): number => {
+  const codeWithoutComments = code
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^\s*\/\/.*$/gm, '');
+
+  const outputExpressionRegex = /\boutputNumber\s*(?::|=)\s*([^,;}]+)/g;
+  let highestOutputNumber = 0;
+  let hasUnresolvedOutput = false;
+  let outputExpressionMatch = outputExpressionRegex.exec(codeWithoutComments);
+
+  while (outputExpressionMatch !== null) {
+    const expression = outputExpressionMatch[1].trim();
+    const directMatch = expression.match(/^([1-9]\d*)\s*$/);
+    const ternaryMatch = expression.match(
+      /\?\s*([1-9]\d*)\s*:\s*([1-9]\d*)\s*$/,
+    );
+
+    if (directMatch) {
+      highestOutputNumber = Math.max(
+        highestOutputNumber,
+        Number(directMatch[1]),
+      );
+    } else if (ternaryMatch) {
+      highestOutputNumber = Math.max(
+        highestOutputNumber,
+        Number(ternaryMatch[1]),
+        Number(ternaryMatch[2]),
+      );
+    } else {
+      hasUnresolvedOutput = true;
+    }
+
+    outputExpressionMatch = outputExpressionRegex.exec(codeWithoutComments);
+  }
+
+  if (hasUnresolvedOutput) {
+    return Math.max(highestOutputNumber, DEFAULT_OUTPUT_COUNT);
+  }
+
+  return highestOutputNumber || DEFAULT_OUTPUT_COUNT;
+};
+
+const buildOutputs = (outputCount: number): IpluginDetails['outputs'] => {
+  const outputs: IpluginDetails['outputs'] = [];
+
+  for (let number = 1; number <= outputCount; number += 1) {
+    outputs.push({
+      number,
+      tooltip: `Continue to output ${number}`,
+    });
+  }
+
+  return outputs;
+};
+
+const details = (inputs?: Record<string, unknown>): IpluginDetails => ({
   name: 'Custom JS Function',
-  description: 'Write a custom function in JS to run with up to 4 outputs',
+  description: 'Write a custom function in JS with output handles detected from literal outputNumber values',
   style: {
     borderColor: 'green',
   },
@@ -65,24 +122,11 @@ console.log(args.userVariables.library.test)
       tooltip: 'Write your custom function here',
     },
   ],
-  outputs: [
-    {
-      number: 1,
-      tooltip: 'Continue to output 1',
-    },
-    {
-      number: 2,
-      tooltip: 'Continue to output 2',
-    },
-    {
-      number: 3,
-      tooltip: 'Continue to output 3',
-    },
-    {
-      number: 4,
-      tooltip: 'Continue to output 4',
-    },
-  ],
+  outputs: buildOutputs(
+    typeof inputs?.code === 'string'
+      ? getOutputCountFromCode(inputs.code)
+      : DEFAULT_OUTPUT_COUNT,
+  ),
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

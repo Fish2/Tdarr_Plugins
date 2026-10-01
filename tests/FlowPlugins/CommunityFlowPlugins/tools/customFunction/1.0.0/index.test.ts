@@ -1,6 +1,6 @@
 import { promises as fsp } from 'fs';
 import { IpluginInputArgs, Ivariables } from '../../../../../../FlowPluginsTs/FlowHelpers/1.0.0/interfaces/interfaces';
-import { plugin } from '../../../../../../FlowPluginsTs/CommunityFlowPlugins/tools/customFunction/1.0.0/index';
+import { details, plugin } from '../../../../../../FlowPluginsTs/CommunityFlowPlugins/tools/customFunction/1.0.0/index';
 
 // Import the mocked function to access it in tests
 import * as fileUtils from '../../../../../../FlowPluginsTs/FlowHelpers/1.0.0/fileUtils';
@@ -73,6 +73,56 @@ describe('Custom Function Plugin', () => {
         },
       },
     } as unknown as IpluginInputArgs;
+  });
+
+  describe('Dynamic Outputs', () => {
+    const getOutputNumbers = (code?: string): number[] => (
+      details(code === undefined ? undefined : { code }).outputs.map((output) => output.number)
+    );
+
+    it('should keep four outputs when node inputs are not provided', () => {
+      expect(getOutputNumbers()).toEqual([1, 2, 3, 4]);
+    });
+
+    it('should expose outputs up to the highest literal outputNumber', () => {
+      const code = `
+        if (args.variables.user.retry) {
+          return { outputNumber: 1 };
+        }
+
+        return { outputNumber: 3 };
+      `;
+
+      expect(getOutputNumbers(code)).toEqual([1, 2, 3]);
+    });
+
+    it('should read ternary output values without treating condition numbers as outputs', () => {
+      const code = `
+        return {
+          outputNumber: args.variables.user.attempts > 9 ? 2 : 5,
+        };
+      `;
+
+      expect(getOutputNumbers(code)).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should ignore outputNumber examples in comments', () => {
+      const code = `
+        // outputNumber: 99
+        /* outputNumber: 12 */
+        return { outputNumber: 2 };
+      `;
+
+      expect(getOutputNumbers(code)).toEqual([1, 2]);
+    });
+
+    it('should fall back to four outputs when outputNumber is computed dynamically', () => {
+      const code = `
+        return { outputNumber: args.variables.user.selectedOutput };
+      `;
+
+      expect(getOutputNumbers(code)).toEqual([1, 2, 3, 4]);
+    });
   });
 
   describe('Plugin Execution Setup', () => {

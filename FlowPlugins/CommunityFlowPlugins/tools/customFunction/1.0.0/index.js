@@ -41,9 +41,48 @@ exports.plugin = exports.details = void 0;
 var fs_1 = require("fs");
 var fileUtils_1 = require("../../../../FlowHelpers/1.0.0/fileUtils");
 /* eslint no-plusplus: ["error", { "allowForLoopAfterthoughts": true }] */
-var details = function () { return ({
+var DEFAULT_OUTPUT_COUNT = 4;
+var getOutputCountFromCode = function (code) {
+    var codeWithoutComments = code
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/^\s*\/\/.*$/gm, '');
+    var outputExpressionRegex = /\boutputNumber\s*(?::|=)\s*([^,;}]+)/g;
+    var highestOutputNumber = 0;
+    var hasUnresolvedOutput = false;
+    var outputExpressionMatch = outputExpressionRegex.exec(codeWithoutComments);
+    while (outputExpressionMatch !== null) {
+        var expression = outputExpressionMatch[1].trim();
+        var directMatch = expression.match(/^([1-9]\d*)\s*$/);
+        var ternaryMatch = expression.match(/\?\s*([1-9]\d*)\s*:\s*([1-9]\d*)\s*$/);
+        if (directMatch) {
+            highestOutputNumber = Math.max(highestOutputNumber, Number(directMatch[1]));
+        }
+        else if (ternaryMatch) {
+            highestOutputNumber = Math.max(highestOutputNumber, Number(ternaryMatch[1]), Number(ternaryMatch[2]));
+        }
+        else {
+            hasUnresolvedOutput = true;
+        }
+        outputExpressionMatch = outputExpressionRegex.exec(codeWithoutComments);
+    }
+    if (hasUnresolvedOutput) {
+        return Math.max(highestOutputNumber, DEFAULT_OUTPUT_COUNT);
+    }
+    return highestOutputNumber || DEFAULT_OUTPUT_COUNT;
+};
+var buildOutputs = function (outputCount) {
+    var outputs = [];
+    for (var number = 1; number <= outputCount; number += 1) {
+        outputs.push({
+            number: number,
+            tooltip: "Continue to output ".concat(number),
+        });
+    }
+    return outputs;
+};
+var details = function (inputs) { return ({
     name: 'Custom JS Function',
-    description: 'Write a custom function in JS to run with up to 4 outputs',
+    description: 'Write a custom function in JS with output handles detected from literal outputNumber values',
     style: {
         borderColor: 'green',
     },
@@ -68,24 +107,9 @@ var details = function () { return ({
             tooltip: 'Write your custom function here',
         },
     ],
-    outputs: [
-        {
-            number: 1,
-            tooltip: 'Continue to output 1',
-        },
-        {
-            number: 2,
-            tooltip: 'Continue to output 2',
-        },
-        {
-            number: 3,
-            tooltip: 'Continue to output 3',
-        },
-        {
-            number: 4,
-            tooltip: 'Continue to output 4',
-        },
-    ],
+    outputs: buildOutputs(typeof (inputs === null || inputs === void 0 ? void 0 : inputs.code) === 'string'
+        ? getOutputCountFromCode(inputs.code)
+        : DEFAULT_OUTPUT_COUNT),
 }); };
 exports.details = details;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
